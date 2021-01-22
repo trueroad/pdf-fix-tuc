@@ -7,8 +7,10 @@ pdf_fix_tuc_LDADD = $(LIBQPDF_LIBS)
 
 EXTRA_DIST = build_table.py
 
+if ENABLE_BUILD_TABLE
 tounicode_table.cc: aj17-kanji.txt
 	$(srcdir)/build_table.py $< > $@
+endif
 
 aj17-kanji.txt:
 	$(WGET) https://github.com/adobe-type-tools/Adobe-Japan1/raw/master/aj17-kanji.txt

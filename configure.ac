@@ -23,6 +23,13 @@ AC_PROG_CXX
 AC_PATH_PROG([WGET], [wget])
 AC_SUBST([WGET])
 
+AC_ARG_ENABLE([build-table],
+    [AS_HELP_STRING([--enable-build-table],
+        [Enable building table (default is disable)])],
+    [enable_build_table=yes],
+    [enable_build_table=no])
+AM_CONDITIONAL([ENABLE_BUILD_TABLE], [test "x$enable_build_table" = xyes])
+
 # Checks for libraries.
 PKG_PROG_PKG_CONFIG
 PKG_CHECK_MODULES([LIBQPDF], [libqpdf])
