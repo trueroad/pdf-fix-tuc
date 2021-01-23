@@ -60,7 +60,11 @@ AC_ARG_ENABLE([build-table],
                 [wget isn't found. aj17-kanji.txt cannot be retrieved.])],
             [AC_MSG_NOTICE(
                 [wget is found. aj17-kanji.txt will be retrieved.])])],
-        [AC_MSG_RESULT([yes])])],
+        [AC_MSG_RESULT([yes])])
+     AC_PATH_PROG([PYTHON3], [python3])
+     AS_IF([test "x$PYTHON3" = x],
+        [AC_MSG_ERROR([python3 isn't found. You cannot enable build-table.])],
+        [AC_MSG_NOTICE([python3 is found. The table will build.])])],
     [enable_build_table=no])
 AM_CONDITIONAL([ENABLE_BUILD_TABLE], [test "x$enable_build_table" = xyes])
 AC_SUBST([WGET])
