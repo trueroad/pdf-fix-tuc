@@ -21,9 +21,6 @@ AC_DEFINE_UNQUOTED([PACKAGE_LICENSE], ["$PACKAGE_LICENSE"],
 # Checks for programs.
 AC_PROG_CXX
 
-AC_PATH_PROG([WGET], [wget])
-AC_SUBST([WGET])
-
 AC_PATH_PROG([DIFF], [diff])
 AS_IF([test "x$DIFF" = x],
       [AC_MSG_WARN([diff isn't found. `make check' will fail tests.])])
@@ -53,9 +50,20 @@ AC_SUBST([DVIPDFMX])
 AC_ARG_ENABLE([build-table],
     [AS_HELP_STRING([--enable-build-table],
         [Enable building table (default is disable)])],
-    [enable_build_table=yes],
+    [enable_build_table=yes
+     AC_MSG_CHECKING([for build-table source aj17-kanji.txt])
+     AS_IF([test ! -e ${srcdir}/src/aj17-kanji.txt],
+        [AC_MSG_RESULT([no])
+         AC_PATH_PROG([WGET], [wget])
+         AS_IF([test "x$WGET" = x],
+            [AC_MSG_ERROR(
+                [wget isn't found. aj17-kanji.txt cannot be retrieved.])],
+            [AC_MSG_NOTICE(
+                [wget is found. aj17-kanji.txt will be retrieved.])])],
+        [AC_MSG_RESULT([yes])])],
     [enable_build_table=no])
 AM_CONDITIONAL([ENABLE_BUILD_TABLE], [test "x$enable_build_table" = xyes])
+AC_SUBST([WGET])
 
 # Checks for libraries.
 PKG_PROG_PKG_CONFIG
