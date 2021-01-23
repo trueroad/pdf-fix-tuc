@@ -20,8 +20,35 @@ AC_DEFINE_UNQUOTED([PACKAGE_LICENSE], ["$PACKAGE_LICENSE"],
 
 # Checks for programs.
 AC_PROG_CXX
+
 AC_PATH_PROG([WGET], [wget])
 AC_SUBST([WGET])
+
+AC_PATH_PROG([DIFF], [diff])
+AS_IF([test "x$DIFF" = x],
+      [AC_MSG_WARN([diff isn't found. `make check' will fail tests.])])
+AC_SUBST([DIFF])
+
+AC_PATH_PROG([PDFTOTEXT], [pdftotext])
+AS_IF([test "x$PDFTOTEXT" = x],
+      [AC_MSG_WARN([pdftotext isn't found. `make check' will fail tests.])])
+AC_SUBST([PDFTOTEXT])
+
+AC_MSG_CHECKING([for pre-generated test PDFs])
+AS_IF([test ! -e ${srcdir}/test/test.pdf],
+      [AC_MSG_RESULT([no])
+       AC_PATH_PROG([UPTEX], [uptex])
+       AC_PATH_PROG([DVIPDFMX], [dvipdfmx])
+       AS_IF([test "x$UPTEX" = x || test "x$DVIPDFMX" = x],
+             [AC_MSG_WARN(
+                  [uptex/dvipdfmx isn't found. Test PDFs cannot be generated.])
+              AC_MSG_WARN(
+                  [You cannot use `make check'.])],
+             [AC_MSG_NOTICE(
+                  [uptex/dvipdfmx is found. Test PDFs will be generated.])])],
+      [AC_MSG_RESULT([yes])])
+AC_SUBST([UPTEX])
+AC_SUBST([DVIPDFMX])
 
 AC_ARG_ENABLE([build-table],
     [AS_HELP_STRING([--enable-build-table],
@@ -42,5 +69,6 @@ AX_CXX_COMPILE_STDCXX(11, [noext], [mandatory])
 # Checks for library functions.
 
 AC_CONFIG_FILES([Makefile
-    src/Makefile])
+    src/Makefile
+    test/Makefile])
 AC_OUTPUT

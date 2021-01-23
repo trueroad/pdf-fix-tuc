@@ -1,0 +1,48 @@
+%!PS-Adobe-3.0 Resource-CMap
+%
+% *** Caution ***
+% For test only.
+% This file contains garbled Unicode codepoints.
+% *** Caution ***
+%
+/CIDInit /ProcSet findresource begin
+12 dict begin
+begincmap
+/CMapName /SourceHanSerif-Regular-UTF16 def
+/CMapType 2 def
+/CIDSystemInfo <<
+  /Registry (Adobe)
+  /Ordering (UCS)
+  /Supplement 0
+>> def
+1 begincodespacerange
+<0000> <FFFF>
+endcodespacerange
+16 beginbfchar
+<05B5> <3042>
+<05BF> <304C>
+<05D2> <305F>
+<05D6> <3063>
+<05DA> <3067>
+<05E1> <306E>
+<05E2> <306F>
+<0640> <30CF>
+<2BB4> <521D>
+% <691D> <7389>
+<691D> <2F5F>
+% <6EAE> <767D>
+<6EAE> <2F69>
+% <9536> <898B>
+<9536> <2F92>
+<97AA> <8ABF>
+% <AA7D> <9577>
+<AA7D> <2ED1>
+% <AF1E> <97F3>
+<AF1E> <2FB3>
+% <B45A> <9AD8>
+<B45A> <2FBC>
+endbfchar
+endcmap
+CMapName currentdict /CMap defineresource pop
+end
+end

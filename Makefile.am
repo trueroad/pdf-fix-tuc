@@ -1,4 +1,4 @@
-SUBDIRS = src
+SUBDIRS = src test
 
 dist_doc_DATA = Readme.md Readme.ja.md LICENSE
 EXTRA_DIST = autogen.sh
