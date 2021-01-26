@@ -48,6 +48,8 @@ tounicode::tounicode ():
   ({
     { std::regex (R"(<([\da-fA-F]+)>\s*<([\da-fA-F]+)>\r?)"),
       &tounicode::bfchar_hex},
+    { std::regex (R"(<([\da-fA-F]+)>\s*<([\da-fA-F]+)>\s*<([\da-fA-F]+)>\r?)"),
+      &tounicode::bfrange_hex},
     { std::regex (R"((\d+)\s*beginbfchar\r?)"),
       &tounicode::beginbfchar},
     { std::regex (R"((\d+)\s*beginbfrange\r?)"),
@@ -96,6 +98,64 @@ bool tounicode::bfchar_hex (const std::smatch &sm)
           << ">"
           << std::endl;
     }
+
+  return true;
+}
+
+void tounicode::bfrange_output (const int cid_start,
+                                const int cid_end,
+                                const int uni_start)
+{
+  ss_ << "<"
+      << std::hex << std::uppercase
+      << std::setw (4) << std::setfill ('0')
+      << cid_start
+      << "> <"
+      << std::setw (4) << std::setfill ('0')
+      << cid_end
+      << "> <"
+      << std::setw (4) << std::setfill ('0')
+      << uni_start
+      << std::dec << std::nouppercase
+      << ">"
+      << std::endl;
+}
+
+bool tounicode::bfrange_hex (const std::smatch &sm)
+{
+  if (!is_bfrange_)
+    {
+      ss_ << sm[0].str () << std::endl;
+      return true;
+    }
+
+  const auto cid_start {std::stoi (sm[1].str (), nullptr, 16)};
+  const auto cid_end {std::stoi (sm[2].str (), nullptr, 16)};
+  const auto uni_start {std::stoi (sm[3].str (), nullptr, 16)};
+
+  auto cid_new_range_start = cid_start;
+  auto uni_new_range_start = uni_start;
+  auto cid = cid_start;
+  auto uni = uni_start;
+  for (; cid <= cid_end; ++cid, ++uni)
+    {
+      if (table_.find (uni) != table_.end ())
+        {
+          if (cid_new_range_start < cid)
+            bfrange_output (cid_new_range_start, cid - 1,
+                            uni_new_range_start);
+
+          const auto uni_new = table_.at (uni);
+          bfrange_output (cid, cid, uni_new);
+
+          cid_new_range_start = cid + 1;
+          uni_new_range_start = uni + 1;
+        }
+    }
+
+  if (cid_new_range_start < cid)
+    bfrange_output (cid_new_range_start, cid - 1,
+                    uni_new_range_start);
 
   return true;
 }
