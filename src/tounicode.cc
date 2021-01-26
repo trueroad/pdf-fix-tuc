@@ -50,9 +50,9 @@ tounicode::tounicode ():
       &tounicode::bfchar_hex},
     { std::regex (R"(<([\da-fA-F]+)>(\s*)<([\da-fA-F]+)>(\s*)<([\da-fA-F]+)>\r?)"),
       &tounicode::bfrange_hex},
-    { std::regex (R"((\d+)\s*beginbfchar\r?)"),
+    { std::regex (R"((\d+)(\s*)beginbfchar\r?)"),
       &tounicode::beginbfchar},
-    { std::regex (R"((\d+)\s*beginbfrange\r?)"),
+    { std::regex (R"((\d+)(\s*)beginbfrange\r?)"),
       &tounicode::beginbfrange},
     { std::regex (R"(endbfchar\r?)"),
       &tounicode::endbfchar},
@@ -167,6 +167,7 @@ bool tounicode::bfrange_hex (const std::smatch &sm)
 bool tounicode::beginbfchar (const std::smatch &sm)
 {
   const auto chars {std::stoi (sm[1].str ())};
+  const auto space {sm[2].str ()};
 
   if (is_bfrange_)
     {
@@ -179,7 +180,8 @@ bool tounicode::beginbfchar (const std::smatch &sm)
     }
 
   ss_ << chars
-      << " beginbfchar"
+      << space
+      << "beginbfchar"
       << std::endl;
 
   is_bfchar_ = true;
@@ -203,7 +205,7 @@ bool tounicode::endbfchar (const std::smatch &sm)
       std::cerr << "warning: invalid ToUnicode: no beginbfchar" << std::endl;
     }
 
-  ss_ << "endbfchar"
+  ss_ << sm[0].str ()
       << std::endl;
 
   return true;
@@ -212,6 +214,7 @@ bool tounicode::endbfchar (const std::smatch &sm)
 bool tounicode::beginbfrange (const std::smatch &sm)
 {
   const auto ranges {std::stoi (sm[1].str ())};
+  const auto space {sm[2].str ()};
 
   if (is_bfchar_)
     {
@@ -224,7 +227,8 @@ bool tounicode::beginbfrange (const std::smatch &sm)
     }
 
   ss_ << ranges
-      << " beginbfrange"
+      << space
+      << "beginbfrange"
       << std::endl;
 
   is_bfrange_ = true;
@@ -248,7 +252,7 @@ bool tounicode::endbfrange (const std::smatch &sm)
       std::cerr << "warning: invalid ToUnicode: no beginbfrange" << std::endl;
     }
 
-  ss_ << "endbfrange"
+  ss_ << sm[0].str ()
       << std::endl;
 
   return true;
@@ -256,7 +260,7 @@ bool tounicode::endbfrange (const std::smatch &sm)
 
 bool tounicode::other (const std::smatch &sm)
 {
-  ss_ << sm[1].str ()
+  ss_ << sm[0].str ()
       << std::endl;
 
   return true;
