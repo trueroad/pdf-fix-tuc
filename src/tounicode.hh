@@ -51,7 +51,8 @@ public:
 
 private:
   bool bfchar_hex (const std::smatch &);
-  void bfrange_output (const int, const int, const int);
+  void bfrange_output (const int, const int, const int,
+                       const std::string &, const std::string &);
   bool bfrange_hex (const std::smatch &);
   bool beginbfchar (const std::smatch &);
   bool endbfchar (const std::smatch &);

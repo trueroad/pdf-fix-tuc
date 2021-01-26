@@ -48,7 +48,7 @@ tounicode::tounicode ():
   ({
     { std::regex (R"((<[\da-fA-F]+>\s*)<([\da-fA-F]+)>\r?)"),
       &tounicode::bfchar_hex},
-    { std::regex (R"(<([\da-fA-F]+)>\s*<([\da-fA-F]+)>\s*<([\da-fA-F]+)>\r?)"),
+    { std::regex (R"(<([\da-fA-F]+)>(\s*)<([\da-fA-F]+)>(\s*)<([\da-fA-F]+)>\r?)"),
       &tounicode::bfrange_hex},
     { std::regex (R"((\d+)\s*beginbfchar\r?)"),
       &tounicode::beginbfchar},
@@ -96,16 +96,22 @@ bool tounicode::bfchar_hex (const std::smatch &sm)
 
 void tounicode::bfrange_output (const int cid_start,
                                 const int cid_end,
-                                const int uni_start)
+                                const int uni_start,
+                                const std::string &space1,
+                                const std::string &space2)
 {
   ss_ << "<"
       << std::hex << std::uppercase
       << std::setw (4) << std::setfill ('0')
       << cid_start
-      << "> <"
+      << ">"
+      << space1
+      << "<"
       << std::setw (4) << std::setfill ('0')
       << cid_end
-      << "> <"
+      << ">"
+      << space2
+      << "<"
       << std::setw (4) << std::setfill ('0')
       << uni_start
       << std::dec << std::nouppercase
@@ -122,8 +128,10 @@ bool tounicode::bfrange_hex (const std::smatch &sm)
     }
 
   const auto cid_start {std::stoi (sm[1].str (), nullptr, 16)};
-  const auto cid_end {std::stoi (sm[2].str (), nullptr, 16)};
-  const auto uni_start {std::stoi (sm[3].str (), nullptr, 16)};
+  const auto cid_end {std::stoi (sm[3].str (), nullptr, 16)};
+  const auto uni_start {std::stoi (sm[5].str (), nullptr, 16)};
+  const auto space1 {sm[2].str ()};
+  const auto space2 {sm[4].str ()};
 
   auto cid_new_range_start = cid_start;
   auto uni_new_range_start = uni_start;
@@ -135,10 +143,11 @@ bool tounicode::bfrange_hex (const std::smatch &sm)
         {
           if (cid_new_range_start < cid)
             bfrange_output (cid_new_range_start, cid - 1,
-                            uni_new_range_start);
+                            uni_new_range_start,
+                            space1, space2);
 
           const auto uni_new = table_.at (uni);
-          bfrange_output (cid, cid, uni_new);
+          bfrange_output (cid, cid, uni_new, space1, space2);
 
           cid_new_range_start = cid + 1;
           uni_new_range_start = uni + 1;
@@ -149,7 +158,8 @@ bool tounicode::bfrange_hex (const std::smatch &sm)
     ss_ << sm[0].str () << std::endl;
   else if (cid_new_range_start < cid)
     bfrange_output (cid_new_range_start, cid - 1,
-                    uni_new_range_start);
+                    uni_new_range_start,
+                    space1, space2);
 
   return true;
 }
