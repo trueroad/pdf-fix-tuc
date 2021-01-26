@@ -12,18 +12,19 @@ TESTS_ENVIRONMENT = top_builddir=$(top_builddir) \
 # Source files for test PDFs
 TESTTEXS = bfchar.tex
 # Test PDFs
-TESTPDFS = $(TESTTEXS:.tex=.pdf)
+TESTPDFS = $(TESTTEXS:.tex=.pdf) bfrange.pdf
 # Garbled text
-TESTGARBLED = $(TESTTEXS:.tex=-garbled.txt)
+TESTGARBLED = $(TESTPDFS:.pdf=-garbled.txt)
 # Expected text
-TESTEXPECTED = $(TESTTEXS:.tex=-expected.txt)
+TESTEXPECTED = $(TESTPDFS:.pdf=-expected.txt)
 
 # Tests by pdftotext
 TESTPDFTOTEXT = $(TESTPDFS:.pdf=-testtext.pdftotext)
 
 # Test scripts and test PDFs
 EXTRA_DIST = test-pdftotext.sh \
-	$(TESTTEXS) $(TESTPDFS) $(TESTGARBLED) $(TESTEXPECTED)
+	$(TESTTEXS) $(TESTPDFS) $(TESTGARBLED) $(TESTEXPECTED) \
+	build_bfrange.py
 
 # For `make clean'
 CLEANFILES = $(TESTTEXS:.tex=.log) \
@@ -42,6 +43,13 @@ CLEANFILES = $(TESTTEXS:.tex=.log) \
 	$(DVIPDFMX) $< -o $@
 	$(PDFTOTEXT) $@ $(@:.pdf=-extracted.txt)
 	$(DIFF) -ubwBE $(word 2,$^) $(@:.pdf=-extracted.txt)
+
+# Generate bfrange PDF
+# Tarball contains them for convenience.
+bfrange.pdf: bfchar.pdf
+	$(QPDF) --qdf $< bfchar.qdf
+	$(srcdir)/build_bfrange.py < bfchar.qdf > bfrange.qdf
+	$(FIX_QDF) < bfrange.qdf > $@
 
 # Test PDFs
 %-test.pdf: %.pdf
