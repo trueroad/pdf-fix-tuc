@@ -10,7 +10,7 @@ TESTS_ENVIRONMENT = top_builddir=$(top_builddir) \
 	PDFTOTEXT=$(PDFTOTEXT)
 
 # Source files for test PDFs
-TESTTEXS = test.tex
+TESTTEXS = bfchar.tex
 # Test PDFs
 TESTPDFS = $(TESTTEXS:.tex=.pdf)
 # Garbled text
@@ -36,8 +36,8 @@ CLEANFILES = $(TESTTEXS:.tex=.log) \
 	$(UPTEX) -halt-on-error -interaction=nonstopmode -file-line-error $<
 
 %.pdf: %.dvi %-garbled.txt SourceHanSerif-Regular-UTF16
-	if [ ! -e $(notdir $(word 3,$^)) ]; then \
-		ln -s $(word 3,$^); \
+	if [ ! -e SourceHanSerif-Regular-UTF16 ]; then \
+		ln -s $(srcdir)/SourceHanSerif-Regular-UTF16 ; \
 	fi
 	$(DVIPDFMX) $< -o $@
 	$(PDFTOTEXT) $@ $(@:.pdf=-extracted.txt)
