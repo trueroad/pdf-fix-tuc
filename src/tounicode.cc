@@ -46,7 +46,7 @@
 tounicode::tounicode ():
   regex_dispatcher::member_table<tounicode>
   ({
-    { std::regex (R"(<([\da-fA-F]+)>\s*<([\da-fA-F]+)>\r?)"),
+    { std::regex (R"((<[\da-fA-F]+>\s*)<([\da-fA-F]+)>\r?)"),
       &tounicode::bfchar_hex},
     { std::regex (R"(<([\da-fA-F]+)>\s*<([\da-fA-F]+)>\s*<([\da-fA-F]+)>\r?)"),
       &tounicode::bfrange_hex},
@@ -71,18 +71,15 @@ std::string tounicode::get (void)
 
 bool tounicode::bfchar_hex (const std::smatch &sm)
 {
-  const auto cid {std::stoi (sm[1].str (), nullptr, 16)};
   auto uni {std::stoi (sm[2].str (), nullptr, 16)};
 
   if (is_bfchar_ && table_.find (uni) != table_.end ())
     {
       uni = table_.at (uni);
 
-      ss_ << "<"
+      ss_ << sm[1].str ()
+          << "<"
           << std::hex << std::uppercase
-          << std::setw (4) << std::setfill ('0')
-          << cid
-          << "> <"
           << std::setw (4) << std::setfill ('0')
           << uni
           << std::dec << std::nouppercase
