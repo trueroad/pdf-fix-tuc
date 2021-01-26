@@ -91,12 +91,7 @@ bool tounicode::bfchar_hex (const std::smatch &sm)
     }
   else
     {
-      ss_ << "<"
-          << sm[1].str ()
-          << "> <"
-          << sm[2].str ()
-          << ">"
-          << std::endl;
+      ss_ << sm[0].str () << std::endl;
     }
 
   return true;
@@ -153,7 +148,9 @@ bool tounicode::bfrange_hex (const std::smatch &sm)
         }
     }
 
-  if (cid_new_range_start < cid)
+  if (cid_new_range_start == cid_start)
+    ss_ << sm[0].str () << std::endl;
+  else if (cid_new_range_start < cid)
     bfrange_output (cid_new_range_start, cid - 1,
                     uni_new_range_start);
 
