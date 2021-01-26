@@ -46,19 +46,19 @@
 tounicode::tounicode ():
   regex_dispatcher::member_table<tounicode>
   ({
-    { std::regex (R"((<[\da-fA-F]+>\s*)<([\da-fA-F]+)>\r?)"),
+    { std::regex (R"((<[\da-fA-F]+>\s*)<([\da-fA-F]+)>(\r?))"),
       &tounicode::bfchar_hex},
-    { std::regex (R"(<([\da-fA-F]+)>(\s*)<([\da-fA-F]+)>(\s*)<([\da-fA-F]+)>\r?)"),
+    { std::regex (R"(<([\da-fA-F]+)>(\s*)<([\da-fA-F]+)>(\s*)<([\da-fA-F]+)>(\r?))"),
       &tounicode::bfrange_hex},
-    { std::regex (R"((\d+)(\s*)beginbfchar\r?)"),
+    { std::regex (R"((\d+)(\s*)beginbfchar(\r?))"),
       &tounicode::beginbfchar},
-    { std::regex (R"((\d+)(\s*)beginbfrange\r?)"),
+    { std::regex (R"((\d+)(\s*)beginbfrange(\r?))"),
       &tounicode::beginbfrange},
     { std::regex (R"(endbfchar\r?)"),
       &tounicode::endbfchar},
     { std::regex (R"(endbfrange\r?)"),
       &tounicode::endbfrange},
-    { std::regex (R"((.*)\r?)"),
+    { std::regex (R"(.*\r?)"),
       &tounicode::other},
   })
 {
@@ -71,19 +71,22 @@ std::string tounicode::get (void)
 
 bool tounicode::bfchar_hex (const std::smatch &sm)
 {
+  const auto prefix {sm[1].str ()};
   auto uni {std::stoi (sm[2].str (), nullptr, 16)};
+  const auto cr {sm[3].str ()};
 
   if (is_bfchar_ && table_.find (uni) != table_.end ())
     {
       uni = table_.at (uni);
 
-      ss_ << sm[1].str ()
+      ss_ << prefix
           << "<"
           << std::hex << std::uppercase
           << std::setw (4) << std::setfill ('0')
           << uni
           << std::dec << std::nouppercase
           << ">"
+          << cr
           << std::endl;
     }
   else
@@ -98,7 +101,8 @@ void tounicode::bfrange_output (const int cid_start,
                                 const int cid_end,
                                 const int uni_start,
                                 const std::string &space1,
-                                const std::string &space2)
+                                const std::string &space2,
+                                const std::string &cr)
 {
   ss_ << "<"
       << std::hex << std::uppercase
@@ -116,6 +120,7 @@ void tounicode::bfrange_output (const int cid_start,
       << uni_start
       << std::dec << std::nouppercase
       << ">"
+      << cr
       << std::endl;
 }
 
@@ -132,6 +137,7 @@ bool tounicode::bfrange_hex (const std::smatch &sm)
   const auto uni_start {std::stoi (sm[5].str (), nullptr, 16)};
   const auto space1 {sm[2].str ()};
   const auto space2 {sm[4].str ()};
+  const auto cr {sm[6].str ()};
 
   auto cid_new_range_start = cid_start;
   auto uni_new_range_start = uni_start;
@@ -144,10 +150,10 @@ bool tounicode::bfrange_hex (const std::smatch &sm)
           if (cid_new_range_start < cid)
             bfrange_output (cid_new_range_start, cid - 1,
                             uni_new_range_start,
-                            space1, space2);
+                            space1, space2, cr);
 
           const auto uni_new = table_.at (uni);
-          bfrange_output (cid, cid, uni_new, space1, space2);
+          bfrange_output (cid, cid, uni_new, space1, space2, cr);
 
           cid_new_range_start = cid + 1;
           uni_new_range_start = uni + 1;
@@ -159,7 +165,7 @@ bool tounicode::bfrange_hex (const std::smatch &sm)
   else if (cid_new_range_start < cid)
     bfrange_output (cid_new_range_start, cid - 1,
                     uni_new_range_start,
-                    space1, space2);
+                    space1, space2, cr);
 
   return true;
 }
@@ -168,6 +174,7 @@ bool tounicode::beginbfchar (const std::smatch &sm)
 {
   const auto chars {std::stoi (sm[1].str ())};
   const auto space {sm[2].str ()};
+  const auto cr {sm[3].str ()};
 
   if (is_bfrange_)
     {
@@ -182,6 +189,7 @@ bool tounicode::beginbfchar (const std::smatch &sm)
   ss_ << chars
       << space
       << "beginbfchar"
+      << cr
       << std::endl;
 
   is_bfchar_ = true;
@@ -215,6 +223,7 @@ bool tounicode::beginbfrange (const std::smatch &sm)
 {
   const auto ranges {std::stoi (sm[1].str ())};
   const auto space {sm[2].str ()};
+  const auto cr {sm[3].str ()};
 
   if (is_bfchar_)
     {
@@ -229,6 +238,7 @@ bool tounicode::beginbfrange (const std::smatch &sm)
   ss_ << ranges
       << space
       << "beginbfrange"
+      << cr
       << std::endl;
 
   is_bfrange_ = true;
