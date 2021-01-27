@@ -62,6 +62,10 @@ private:
   bool other (const std::smatch &);
 
   std::stringstream ss_;
+  std::stringstream ss_bfrange_;
+  int bfranges_;
+  std::string beginbfrange_space_;
+  std::string beginbfrange_cr_;
   bool is_bfchar_ = false;
   bool is_bfrange_ = false;
 

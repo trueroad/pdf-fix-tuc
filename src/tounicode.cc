@@ -104,24 +104,25 @@ void tounicode::bfrange_output (const int cid_start,
                                 const std::string &space2,
                                 const std::string &cr)
 {
-  ss_ << "<"
-      << std::hex << std::uppercase
-      << std::setw (4) << std::setfill ('0')
-      << cid_start
-      << ">"
-      << space1
-      << "<"
-      << std::setw (4) << std::setfill ('0')
-      << cid_end
-      << ">"
-      << space2
-      << "<"
-      << std::setw (4) << std::setfill ('0')
-      << uni_start
-      << std::dec << std::nouppercase
-      << ">"
-      << cr
-      << std::endl;
+  ss_bfrange_ << "<"
+              << std::hex << std::uppercase
+              << std::setw (4) << std::setfill ('0')
+              << cid_start
+              << ">"
+              << space1
+              << "<"
+              << std::setw (4) << std::setfill ('0')
+              << cid_end
+              << ">"
+              << space2
+              << "<"
+              << std::setw (4) << std::setfill ('0')
+              << uni_start
+              << std::dec << std::nouppercase
+              << ">"
+              << cr
+              << std::endl;
+  ++bfranges_;
 }
 
 bool tounicode::bfrange_hex (const std::smatch &sm)
@@ -161,7 +162,10 @@ bool tounicode::bfrange_hex (const std::smatch &sm)
     }
 
   if (cid_new_range_start == cid_start)
-    ss_ << sm[0].str () << std::endl;
+    {
+      ss_bfrange_ << sm[0].str () << std::endl;
+      ++bfranges_;
+    }
   else if (cid_new_range_start < cid)
     bfrange_output (cid_new_range_start, cid - 1,
                     uni_new_range_start,
@@ -221,9 +225,8 @@ bool tounicode::endbfchar (const std::smatch &sm)
 
 bool tounicode::beginbfrange (const std::smatch &sm)
 {
-  const auto ranges {std::stoi (sm[1].str ())};
-  const auto space {sm[2].str ()};
-  const auto cr {sm[3].str ()};
+  beginbfrange_space_  = sm[2].str ();
+  beginbfrange_cr_ = sm[3].str ();
 
   if (is_bfchar_)
     {
@@ -235,13 +238,9 @@ bool tounicode::beginbfrange (const std::smatch &sm)
       std::cerr << "warning: invalid ToUnicode: no endbfrange" << std::endl;
     }
 
-  ss_ << ranges
-      << space
-      << "beginbfrange"
-      << cr
-      << std::endl;
-
   is_bfrange_ = true;
+  ss_bfrange_.clear ();
+  bfranges_ = 0;
 
   return true;
 }
@@ -262,8 +261,16 @@ bool tounicode::endbfrange (const std::smatch &sm)
       std::cerr << "warning: invalid ToUnicode: no beginbfrange" << std::endl;
     }
 
-  ss_ << sm[0].str ()
+  ss_ << bfranges_
+      << beginbfrange_space_
+      << "beginbfrange"
+      << beginbfrange_cr_
+      << std::endl
+      << ss_bfrange_.str ()
+      << sm[0].str ()
       << std::endl;
+  ss_bfrange_.clear ();
+  bfranges_ = 0;
 
   return true;
 }
