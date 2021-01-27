@@ -24,6 +24,7 @@ TESTPDFTOTEXT = $(TESTPDFS:.pdf=-testtext.pdftotext)
 # Test scripts and test PDFs
 EXTRA_DIST = test-pdftotext.sh \
 	$(TESTTEXS) $(TESTPDFS) $(TESTGARBLED) $(TESTEXPECTED) \
+	SourceHanSerif-Regular-UTF16 \
 	build_bfrange.py
 
 # For `make clean'
