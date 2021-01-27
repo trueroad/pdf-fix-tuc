@@ -31,6 +31,11 @@ AS_IF([test "x$PDFTOTEXT" = x],
     [AC_MSG_WARN([pdftotext isn't found. `make check' will fail tests.])])
 AC_SUBST([PDFTOTEXT])
 
+AC_PATH_PROG([GREP], [grep])
+AS_IF([test "x$GREP" = x],
+    [AC_MSG_WARN([grep isn't found. `make check' will fail tests.])])
+AC_SUBST([GREP])
+
 AC_MSG_CHECKING([for pre-generated test PDFs])
 AS_IF([test ! -e ${srcdir}/test/bfchar.pdf],
     [AC_MSG_RESULT([no])

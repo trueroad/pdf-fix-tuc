@@ -1,13 +1,15 @@
-TESTS = $(TESTPDFTOTEXT)
+TESTS = $(TESTPDFTOTEXT) $(TESTQDFCONTENTS)
 
-TEST_EXTENSIONS = .pdftotext
+TEST_EXTENSIONS = .pdftotext .qdfcontents
 
 PDFTOTEXT_LOG_COMPILER = $(srcdir)/test-pdftotext.sh
+QDFCONTENTS_LOG_COMPILER = $(srcdir)/test-qdfcontents.sh
 
 TESTS_ENVIRONMENT = top_builddir=$(top_builddir) \
 	srcdir=$(srcdir) \
 	DIFF=$(DIFF) \
-	PDFTOTEXT=$(PDFTOTEXT)
+	PDFTOTEXT=$(PDFTOTEXT) \
+	GREP=$(GREP)
 
 # Source files for test PDFs
 TESTTEXS = bfchar.tex
@@ -17,19 +19,26 @@ TESTPDFS = $(TESTTEXS:.tex=.pdf) bfrange.pdf bfrange2.pdf
 TESTGARBLED = $(TESTPDFS:.pdf=-garbled.txt)
 # Expected text
 TESTEXPECTED = $(TESTPDFS:.pdf=-expected.txt)
+# Expected QDF contents
+TESTCONTENTS = $(TESTPDFS:.pdf=-qdfcontents.txt)
 
 # Tests by pdftotext
 TESTPDFTOTEXT = $(TESTPDFS:.pdf=-testtext.pdftotext)
 
+# Tests by QDF contents
+TESTQDFCONTENTS = $(TESTPDFS:.pdf=-testqdf.qdfcontents)
+
 # Test scripts and test PDFs
-EXTRA_DIST = test-pdftotext.sh \
-	$(TESTTEXS) $(TESTPDFS) $(TESTGARBLED) $(TESTEXPECTED) \
+EXTRA_DIST = test-pdftotext.sh test-qdfcontents.sh \
+	$(TESTTEXS) $(TESTPDFS) \
+	$(TESTGARBLED) $(TESTEXPECTED) $(TESTCONTENTS) \
 	SourceHanSerif-Regular-UTF16 \
 	build_bfrange.py build_bfrange2.py
 
 # For `make clean'
 CLEANFILES = $(TESTTEXS:.tex=.log) \
 	$(TESTPDFTOTEXT) \
+	$(TESTQDFCONTENTS) \
 	$(TESTPDFS:.pdf=-test.pdf)
 
 if GENERATE_TEST_PDF
@@ -74,4 +83,13 @@ endif
 %-testtext.pdftotext: %-test.pdf %-expected.txt
 	$(PDFTOTEXT) $< $@
 
-.PRECIOUS: %.dvi %.pdf %-test.pdf %-testtext.pdftotext
+# Test QDFs
+%-test.qdf: %.pdf
+	${top_builddir}/src/pdf-fix-tuc --qdf $< $@
+
+# Test qdfcontents
+%-testqdf.qdfcontents: %-test.qdf %-qdfcontents.txt
+	ln -s $< $@
+
+.PRECIOUS: %.dvi %.pdf %-test.pdf %-testtext.pdftotext \
+		%-test.qdf %-testqdf.qdfcontents
