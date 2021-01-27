@@ -23,48 +23,48 @@ AC_PROG_CXX
 
 AC_PATH_PROG([DIFF], [diff])
 AS_IF([test "x$DIFF" = x],
-      [AC_MSG_WARN([diff isn't found. `make check' will fail tests.])])
+    [AC_MSG_WARN([diff isn't found. `make check' will fail tests.])])
 AC_SUBST([DIFF])
 
 AC_PATH_PROG([PDFTOTEXT], [pdftotext])
 AS_IF([test "x$PDFTOTEXT" = x],
-      [AC_MSG_WARN([pdftotext isn't found. `make check' will fail tests.])])
+    [AC_MSG_WARN([pdftotext isn't found. `make check' will fail tests.])])
 AC_SUBST([PDFTOTEXT])
 
 AC_MSG_CHECKING([for pre-generated test PDFs])
 AS_IF([test ! -e ${srcdir}/test/bfchar.pdf],
-      [AC_MSG_RESULT([no])
-       AC_PATH_PROG([UPTEX], [uptex])
-       AS_IF([test "x$UPTEX" = x],
-             [AC_MSG_WARN(
-                  [uptex isn't found. Test PDFs cannot be generated.])
-              AC_MSG_WARN(
-                  [You cannot use `make check'.])])
-       AC_PATH_PROG([DVIPDFMX], [dvipdfmx])
-       AS_IF([test "x$DVIPDFMX" = x],
-             [AC_MSG_WARN(
-                  [dvipdfmx isn't found. Test PDFs cannot be generated.])
-              AC_MSG_WARN(
-                  [You cannot use `make check'.])])
-       AC_PATH_PROG([QPDF], [qpdf])
-       AS_IF([test "x$QPDF" = x],
-             [AC_MSG_WARN(
-                  [qpdf isn't found. Test PDFs cannot be generated.])
-              AC_MSG_WARN(
-                  [You cannot use `make check'.])])
-       AC_PATH_PROG([FIX_QDF], [fix-qdf])
-       AS_IF([test "x$FIX_QDF" = x],
-             [AC_MSG_WARN(
-                  [fix-qdf isn't found. Test PDFs cannot be generated.])
-              AC_MSG_WARN(
-                  [You cannot use `make check'.])])
-       AC_PATH_PROG([PYTHON3], [python3])
-       AS_IF([test "x$PYTHON3" = x],
-             [AC_MSG_WARN(
-                  [python3 isn't found. Test PDFs cannot be generated.])
-              AC_MSG_WARN(
-                  [You cannot use `make check'.])])],
-      [AC_MSG_RESULT([yes])])
+    [AC_MSG_RESULT([no])
+     AC_PATH_PROG([UPTEX], [uptex])
+     AS_IF([test "x$UPTEX" = x],
+        [AC_MSG_WARN(
+            [uptex isn't found. Test PDFs cannot be generated.])
+         AC_MSG_WARN(
+            [You cannot use `make check'.])])
+     AC_PATH_PROG([DVIPDFMX], [dvipdfmx])
+     AS_IF([test "x$DVIPDFMX" = x],
+        [AC_MSG_WARN(
+            [dvipdfmx isn't found. Test PDFs cannot be generated.])
+         AC_MSG_WARN(
+            [You cannot use `make check'.])])
+     AC_PATH_PROG([QPDF], [qpdf])
+     AS_IF([test "x$QPDF" = x],
+        [AC_MSG_WARN(
+            [qpdf isn't found. Test PDFs cannot be generated.])
+         AC_MSG_WARN(
+            [You cannot use `make check'.])])
+     AC_PATH_PROG([FIX_QDF], [fix-qdf])
+     AS_IF([test "x$FIX_QDF" = x],
+        [AC_MSG_WARN(
+            [fix-qdf isn't found. Test PDFs cannot be generated.])
+         AC_MSG_WARN(
+            [You cannot use `make check'.])])
+     AC_PATH_PROG([PYTHON3], [python3])
+     AS_IF([test "x$PYTHON3" = x],
+        [AC_MSG_WARN(
+            [python3 isn't found. Test PDFs cannot be generated.])
+         AC_MSG_WARN(
+            [You cannot use `make check'.])])],
+    [AC_MSG_RESULT([yes])])
 AC_SUBST([UPTEX])
 AC_SUBST([DVIPDFMX])
 AC_SUBST([QPDF])
