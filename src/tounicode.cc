@@ -239,6 +239,7 @@ bool tounicode::beginbfrange (const std::smatch &sm)
     }
 
   is_bfrange_ = true;
+  ss_bfrange_.str ("");
   ss_bfrange_.clear ();
   bfranges_ = 0;
 
@@ -269,6 +270,7 @@ bool tounicode::endbfrange (const std::smatch &sm)
       << ss_bfrange_.str ()
       << sm[0].str ()
       << std::endl;
+  ss_bfrange_.str ("");
   ss_bfrange_.clear ();
   bfranges_ = 0;
 
