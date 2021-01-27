@@ -65,6 +65,8 @@ AS_IF([test ! -e ${srcdir}/test/bfchar.pdf],
          AC_MSG_WARN(
             [You cannot use `make check'.])])],
     [AC_MSG_RESULT([yes])])
+AM_CONDITIONAL([GENERATE_TEST_PDF],
+    [test ! -e ${srcdir}/test/bfchar.pdf])
 AC_SUBST([UPTEX])
 AC_SUBST([DVIPDFMX])
 AC_SUBST([QPDF])
